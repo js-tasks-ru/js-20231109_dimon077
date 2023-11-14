@@ -6,10 +6,13 @@
  */
 export function sortStrings(arr, param = 'asc') {
   let newArr = [...arr];
+  let collatorAsc = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
+  let collatorDesc = new Intl.Collator(['ru', 'en']);
+
   if (param == 'asc') {
-    newArr.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()) == 0 ? (a.localeCompare(b) * -1) : a.localeCompare(b));
+    newArr.sort((a, b) => collatorAsc.compare(a, b));
   } else if (param == 'desc') {
-    newArr.sort((a, b) => a.localeCompare(b)).reverse();
+    newArr.sort((a, b) => collatorDesc.compare(a, b)).reverse();
   }
 
   return newArr;
