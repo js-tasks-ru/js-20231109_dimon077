@@ -7,12 +7,12 @@
 export function sortStrings(arr, param = 'asc') {
   const newArr = [...arr];
   const collatorAsc = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
-  const collatorDesc = new Intl.Collator(['ru', 'en']);
+  const collatorDesc = new Intl.Collator(['ru', 'en'], { caseFirst: 'lower' });
 
   if (param == 'asc') {
     newArr.sort((a, b) => collatorAsc.compare(a, b));
   } else if (param == 'desc') {
-    newArr.sort((a, b) => -1 * collatorDesc.compare(a, b));
+    newArr.sort((a, b) => collatorDesc.compare(b, a));
   }
 
   return newArr;
