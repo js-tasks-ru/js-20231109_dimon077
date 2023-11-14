@@ -5,14 +5,14 @@
  * @returns {string[]}
  */
 export function sortStrings(arr, param = 'asc') {
-  let newArr = [...arr];
-  let collatorAsc = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
-  let collatorDesc = new Intl.Collator(['ru', 'en']);
+  const newArr = [...arr];
+  const collatorAsc = new Intl.Collator(['ru', 'en'], { caseFirst: 'upper' });
+  const collatorDesc = new Intl.Collator(['ru', 'en']);
 
   if (param == 'asc') {
     newArr.sort((a, b) => collatorAsc.compare(a, b));
   } else if (param == 'desc') {
-    newArr.sort((a, b) => collatorDesc.compare(a, b)).reverse();
+    newArr.sort((a, b) => -1 * collatorDesc.compare(a, b));
   }
 
   return newArr;
