@@ -7,6 +7,8 @@
 export function trimSymbols(string, size) {
   if (!string.length || size == 0) return '';
 
+  if (!size) return string;
+
   const stringArr = string.slice('');
   let currentLetter = '';
   let currentCount = 1;
