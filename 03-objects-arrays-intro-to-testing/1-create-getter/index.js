@@ -8,12 +8,12 @@ export function createGetter(path) {
 
   return (obj) => {
     if (Object.keys(obj).length == 0) {
-      return undefined;
+      return;
     }
 
     let value = obj;
 
-    for (let i of pathArr) {
+    for (const i of pathArr) {
       value = value[i];
     }
 
