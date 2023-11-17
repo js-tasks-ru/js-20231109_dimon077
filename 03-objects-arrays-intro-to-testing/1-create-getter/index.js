@@ -15,6 +15,9 @@ export function createGetter(path) {
 
     for (const i of pathArr) {
       value = value[i];
+      if (value === undefined) {
+        return;
+      }
     }
 
     return value;
