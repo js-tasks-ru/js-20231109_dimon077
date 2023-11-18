@@ -8,11 +8,5 @@ export function uniq(arr) {
 
   if (!arr.length) return [];
 
-  const set = new Set();
-  const newArr = [];
-
-  arr.forEach(value => set.add(value));
-  set.forEach(value => newArr.push(value));
-
-  return newArr;
+  return Array.from(new Set(arr));
 }
