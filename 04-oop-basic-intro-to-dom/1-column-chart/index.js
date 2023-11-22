@@ -1,6 +1,5 @@
 export default class ColumnChart {
-  constructor(obj) {
-    if (!obj) obj = {};
+  constructor(obj = {}) {
     const { data = [], label = '', link = '', value = 0, formatHeading = (data) => `$${data}` } = obj;
 
     this.data = data;
@@ -33,12 +32,11 @@ export default class ColumnChart {
     return element.firstElementChild;
   }
 
-  createChartsTemplate = (data) => {
-    if (data.length == 0) {
-      this.element.classList.add('column-chart_loading');
-      return;
-    }
+  showDataIsLoading = () => {
+    this.element.classList.add('column-chart_loading');
+  }
 
+  createChartsTemplate = (data) => {
     const maxValue = Math.max(...data);
     const scale = 50 / maxValue;
 
@@ -60,6 +58,11 @@ export default class ColumnChart {
   }
 
   update = (data) => {
+    if (data.length === 0) {
+      this.showDataIsLoading();
+      return;
+    }
+
     const dataBody = this.element.querySelector('div[data-element="body"]');
     dataBody.innerHTML = this.createChartsTemplate(data);
   }
