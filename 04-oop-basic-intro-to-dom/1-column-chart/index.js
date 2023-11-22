@@ -19,7 +19,7 @@ export default class ColumnChart {
         <div class="column-chart" style="--chart-height: 50">
           <div class="column-chart__title">${this.label}${this.createLinkTemplate(this.link)}</div>
           <div class="column-chart__container">
-            <div data-element="header" class="column-chart__header">${this.addValue(this.value)}</div>
+            <div data-element="header" class="column-chart__header">${this.formatHeading(this.value)}</div>
             <div data-element="body" class="column-chart__chart"></div>
           </div>
         </div>
@@ -51,10 +51,6 @@ export default class ColumnChart {
     if (!link) return ``;
 
     return `<a href="${link}" class="column-chart__link">View all</a>`
-  }
-
-  addValue = (value) => {
-    return this.formatHeading(value);
   }
 
   update = (data) => {
