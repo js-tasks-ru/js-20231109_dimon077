@@ -9,6 +9,8 @@ export default class NotificationMessage {
     this.element = this.createElement(this.createTemplate());
   }
 
+  static lastShownNotification;
+
   createElement = (template) => {
     const element = document.createElement('div');
     element.innerHTML = template;
@@ -27,12 +29,15 @@ export default class NotificationMessage {
     `;
   }
 
-  show = (target = this.target) => {
-    const notification = document.querySelector('.notification');
-
-    if (notification) {
-      notification.remove();
+  setLastNotification = () => {
+    if (NotificationMessage.lastShownNotification) {
+      NotificationMessage.lastShownNotification.destroy();
     }
+    NotificationMessage.lastShownNotification = this;
+  }
+
+  show = (target = this.target) => {
+    this.setLastNotification();
 
     target.append(this.element);
     this.removeOnTimer(this.duration);
