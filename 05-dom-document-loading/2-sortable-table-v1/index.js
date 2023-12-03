@@ -5,17 +5,22 @@ export default class SortableTable {
     this.headerKeys = this.headerConfig.map(({ id }) => id);
     this.createImgTemplate = this.headerConfig.find(({ id }) => id === "images")?.template;
 
-    this.element = this.createElement(this.createHeaderTemplate(this.headerConfig), this.createTableBodyTemplate(this.data));
+    this.element = this.createElement(this.createTableTemplate(this.createHeaderTemplate(this.headerConfig), this.createTableBodyTemplate(this.data)));
     this.subElements = {
       header: this.element.querySelector('[data-element="header"]'),
-      body: this.element.querySelector('[data-element="body"]')
+      body: this.element.querySelector('[data-element="body"]'),
+      dataElements: this.element.querySelectorAll('[data-elements]')
     }
+  }
+
+  createHeaderCellTemplate = (id, title, sortable) => {
+    return `<div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}"><span>${title}</span></div>`;
   }
 
   createHeaderTemplate = (headerConfig) => {
     const headerFields = headerConfig
       .map(({ id, title, sortable }) =>
-        `<div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}"><span>${title}</span></div>`)
+        this.createHeaderCellTemplate(id, title, sortable))
       .join('');
 
     return `
@@ -23,10 +28,14 @@ export default class SortableTable {
     `;
   }
 
-  createTableRowTemplate = (item) => {
-    const rowData = this.headerKeys.map(key => key == 'images' ? this.createImgTemplate(item[key]) : `<div class="sortable-table__cell">${item[key]}</div>`).join('');
+  createBodyCellTemplate = (value) => {
+    return `<div class="sortable-table__cell">${value}</div>`;
+  }
 
-    return `<a href="/products/${item.id}" class="sortable-table__row">${rowData}</a>`
+  createTableRowTemplate = (item) => {
+    const rowData = this.headerKeys.map(key => key == 'images' ? this.createImgTemplate(item[key]) : this.createBodyCellTemplate(item[key])).join('');
+
+    return `<a href="/products/${item.id}" class="sortable-table__row">${rowData}</a>`;
   }
 
   createTableBodyTemplate = (data) => {
@@ -36,24 +45,38 @@ export default class SortableTable {
     `;
   }
 
-  createElement = (headerTemplate, bodyTemplate) => {
+  createTableTemplate = (headerTemplate, bodyTemplate) => {
+    return `<div class="sortable-table">${headerTemplate + bodyTemplate}</div>`;
+  }
+
+  createElement = (template) => {
     const elementContainer = document.createElement('div');
-    elementContainer.innerHTML = `<div class="sortable-table">${headerTemplate + bodyTemplate}</div>`
+    elementContainer.innerHTML = template;
 
     return elementContainer.firstElementChild;
+  }
+
+  sortAsc = (data, index) => {
+    const collatorAsc = new Intl.Collator(['ru', 'en'], { numeric: true, caseFirst: 'upper' });
+
+    data.sort((a, b) => collatorAsc.compare(a.children[index].textContent, b.children[index].textContent));
+  }
+
+  sortDesc = (data, index) => {
+    const collatorDesc = new Intl.Collator(['ru', 'en'], { numeric: true, caseFirst: 'lower' });
+
+    data.sort((a, b) => collatorDesc.compare(b.children[index].textContent, a.children[index].textContent));
   }
 
   sort = (field, sortType = 'asc') => {
     const index = this.headerKeys.indexOf(field);
     const sortedBody = [...this.subElements.body.children];
 
-    const collatorAsc = new Intl.Collator(['ru', 'en'], { numeric: true, caseFirst: 'upper' });
-    const collatorDesc = new Intl.Collator(['ru', 'en'], { numeric: true, caseFirst: 'lower' });
-
     if (sortType == 'asc') {
-      sortedBody.sort((a, b) => collatorAsc.compare(a.children[index].textContent, b.children[index].textContent));
-    } else if (sortType == 'desc') {
-      sortedBody.sort((a, b) => collatorDesc.compare(b.children[index].textContent, a.children[index].textContent));
+      this.sortAsc(sortedBody, index);
+    }
+    if (sortType == 'desc') {
+      this.sortDesc(sortedBody, index);
     }
 
     this.updateSortedBody(sortedBody);
