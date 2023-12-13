@@ -7,7 +7,7 @@ export default class SortableTable extends SortableTableV1 {
   } = {}) {
     super(headersConfig, data);
 
-    this.isSortLocally;
+    this.isSortLocally = true;
     this.sortField = sorted.id;
     this.sortOrder = sorted.order;
     this.arrowElement = this.createArrowElement(this.createArrowTemplate());
@@ -35,42 +35,59 @@ export default class SortableTable extends SortableTableV1 {
   }
 
   renderArrowElement = (target) => {
-    target.append(this.arrowElement);
+    if (target) {
+      target.append(this.arrowElement);
+    }
   }
 
   setSortOrder = (target, order) => {
-    target.dataset.order = order;
+    if (target) {
+      target.dataset.order = order;
+    }
   }
 
-  changeSort = (targetNode, sortField) => {
+  changeSortOrder = (targetNode) => {
     if (targetNode.dataset.order == 'asc') {
-      this.setSortOrder(targetNode, 'desc');
-      this.sort(sortField, 'desc');
+      this.sortOrder = 'desc';
+      this.setSortOrder(targetNode, this.sortOrder);
       return;
     }
 
     if (targetNode.dataset.order == 'desc') {
-      this.setSortOrder(targetNode, 'asc');
-      this.sort(sortField, 'asc');
+      this.sortOrder = 'asc';
+      this.setSortOrder(targetNode, this.sortOrder);
       return;
     }
 
+    this.sortOrder = 'desc';
     this.setLastSortField(targetNode);
-    this.renderArrowElement(targetNode, 'desc');
-    this.setSortOrder(targetNode, 'desc');
-    this.sort(sortField, 'desc');
+    this.renderArrowElement(targetNode);
+    this.setSortOrder(targetNode, this.sortOrder);
+    this.sort(targetNode.dataset.id, this.sortOrder);
+  }
+
+  sortOnClient = (sortField, order) => {
+    this.sort(sortField, order);
   }
 
   setLastSortField = (node) => {
-    this.lastSortField.dataset.order = '';
-    this.lastSortField.lastElementChild.remove();
+    if (this.lastSortField) {
+      this.lastSortField.dataset.order = '';
+      this.lastSortField.lastElementChild.remove();
+    }
     this.lastSortField = node;
   }
 
   tablePointerdownHandler = (e) => {
     const sortNode = e.target.closest(`[data-sortable="true"]`);
     if (sortNode) {
-      this.changeSort(sortNode, sortNode.dataset.id);
+      if (this.isSortLocally) {
+        this.changeSortOrder(sortNode);
+        this.sortOnClient(sortNode.dataset.id, this.sortOrder);
+      } else {
+        this.changeSortOrder(sortNode);
+        this.sortOnServer(sortNode.dataset.id, this.sortOrder);
+      }
     }
   }
 
