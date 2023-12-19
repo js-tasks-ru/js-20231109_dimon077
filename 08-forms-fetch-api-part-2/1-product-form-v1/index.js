@@ -106,7 +106,7 @@ export default class ProductForm {
 
   createSelectOptionTemplate = (id, name) => {
     return `
-      <option value="${id}">${escapeHtml(name)}</option>
+      <option value="${escapeHtml(id)}">${escapeHtml(name)}</option>
     `;
   }
 
